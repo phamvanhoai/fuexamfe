@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FUEXAMFE - PDF Question Viewer</title>
+    <link rel="stylesheet" href="assets/styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">FE</span>
+          <div>
+            <h1>FUEXAMFE</h1>
+            <p id="fileName">Chưa import PDF</p>
+          </div>
+        </div>
+
+        <div class="toolbar" aria-label="Thanh công cụ">
+          <label class="file-button" for="pdfInput">
+            <i data-lucide="file-up"></i>
+            <span>Import PDF</span>
+          </label>
+          <input id="pdfInput" type="file" accept="application/pdf,.pdf">
+
+          <button id="exportPngBtn" type="button" title="Xuất câu hiện tại PNG">
+            <i data-lucide="image-down"></i>
+            <span>PNG</span>
+          </button>
+          <button id="exportJpgBtn" type="button" title="Xuất câu hiện tại JPG">
+            <i data-lucide="image"></i>
+            <span>JPG</span>
+          </button>
+          <button id="exportTextBtn" type="button" title="Tải text tất cả câu hỏi">
+            <i data-lucide="file-text"></i>
+            <span>TXT</span>
+          </button>
+          <button id="exportZipBtn" type="button" title="Xuất tất cả câu hỏi thành ZIP ảnh PNG">
+            <i data-lucide="archive"></i>
+            <span>Ảnh ZIP</span>
+          </button>
+          <button id="exportPdfBtn" type="button" title="Xuất tất cả câu hỏi thành PDF">
+            <i data-lucide="file-down"></i>
+            <span>PDF</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <aside class="panel left-panel">
+          <div class="panel-head">
+            <h2>Câu hỏi</h2>
+            <span id="questionCount">0</span>
+          </div>
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input id="searchInput" type="search" placeholder="Tìm câu hỏi">
+          </div>
+          <div id="questionList" class="question-list" aria-label="Danh sách câu hỏi"></div>
+        </aside>
+
+        <section class="stage">
+          <div id="emptyState" class="empty-state">
+            <i data-lucide="file-question"></i>
+            <h2>Import PDF</h2>
+          </div>
+          <div id="questionMount" class="question-mount" aria-live="polite"></div>
+        </section>
+
+        <aside class="panel right-panel">
+          <div class="panel-head">
+            <h2>Dữ liệu</h2>
+            <span id="currentIndex">-</span>
+          </div>
+
+          <label class="field">
+            <span>Đáp án</span>
+            <input id="answerInput" type="text" maxlength="8" placeholder="A, B, AB">
+          </label>
+
+          <label class="field">
+            <span>Loại câu</span>
+            <select id="kindInput">
+              <option value="Choose 1 answer">Choose 1 answer</option>
+              <option value="Choose many answers">Choose many answers</option>
+            </select>
+          </label>
+
+          <div class="field footer-setting">
+            <span>Tên footer hiển thị</span>
+            <div class="footer-controls">
+              <input id="footerInput" type="text" value="FUEXAMFE" placeholder="FUEXAMFE">
+              <button id="resetFooterBtn" type="button" title="Reset về FUEXAMFE">
+                <i data-lucide="rotate-ccw"></i>
+              </button>
+            </div>
+          </div>
+
+          <label class="field grow">
+            <span>Nội dung câu hỏi</span>
+            <textarea id="stemInput" rows="8"></textarea>
+          </label>
+
+          <button id="applyEditBtn" class="wide-button" type="button">
+            <i data-lucide="check"></i>
+            <span>Cập nhật</span>
+          </button>
+
+          <div class="mini-stats">
+            <div>
+              <strong id="pageCount">0</strong>
+              <span>trang PDF</span>
+            </div>
+            <div>
+              <strong id="parsedCount">0</strong>
+              <span>câu đã tách</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+    <div id="exportSandbox" aria-hidden="true"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
