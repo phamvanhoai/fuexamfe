@@ -153,6 +153,19 @@ button:disabled {
   pointer-events: none;
 }
 
+#imageInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.secondary-file-button {
+  background: #24364a;
+  border-color: #24364a;
+}
+
 .workspace {
   display: grid;
   grid-template-columns: 286px minmax(0, 1fr) 318px;
@@ -456,6 +469,20 @@ button:disabled {
   white-space: pre-wrap;
 }
 
+.question-image-wrap {
+  width: 100%;
+  max-height: 100%;
+  margin: 0;
+}
+
+.question-image-wrap img {
+  display: block;
+  width: 100%;
+  max-height: 660px;
+  object-fit: contain;
+  object-position: top left;
+}
+
 .choices {
   display: grid;
   gap: 24px;
@@ -569,6 +596,41 @@ button:disabled {
   background: #132b44;
   color: #fff;
   border-color: #132b44;
+}
+
+.secondary-wide-button {
+  background: #24435f;
+  border-color: #24435f;
+}
+
+.danger-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 10px 14px 0;
+}
+
+.danger-actions button {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid #f0b4ae;
+  border-radius: 8px;
+  background: #fff7f6;
+  color: #a83226;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.danger-actions button:hover {
+  border-color: #db7166;
+}
+
+.danger-actions svg {
+  width: 16px;
+  height: 16px;
 }
 
 .mini-stats {

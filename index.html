@@ -13,7 +13,7 @@
           <span class="brand-mark">FE</span>
           <div>
             <h1>FUEXAMFE</h1>
-            <p id="fileName">Chưa import PDF</p>
+            <p id="fileName">Chưa import dữ liệu</p>
           </div>
         </div>
 
@@ -23,6 +23,11 @@
             <span>Import PDF</span>
           </label>
           <input id="pdfInput" type="file" accept="application/pdf,.pdf">
+          <label class="file-button secondary-file-button" for="imageInput">
+            <i data-lucide="images"></i>
+            <span>Import Ảnh</span>
+          </label>
+          <input id="imageInput" type="file" accept="image/*,.jpg,.jpeg,.png,.webp" multiple>
 
           <button id="exportPngBtn" type="button" title="Xuất câu hiện tại PNG">
             <i data-lucide="image-down"></i>
@@ -63,7 +68,7 @@
         <section class="stage">
           <div id="emptyState" class="empty-state">
             <i data-lucide="file-question"></i>
-            <h2>Import PDF</h2>
+            <h2>Import PDF hoặc Ảnh</h2>
           </div>
           <div id="questionMount" class="question-mount" aria-live="polite"></div>
         </section>
@@ -97,9 +102,73 @@
             </div>
           </div>
 
+          <label class="field">
+            <span>Tên file export</span>
+            <input id="exportNameInput" type="text" value="questions" placeholder="questions">
+          </label>
+
+          <div class="field ai-setting">
+            <span>Đáp án khi import</span>
+            <select id="importAnswerModeInput">
+              <option value="keep">Giữ đáp án nếu có</option>
+              <option value="blank">Không chọn đáp án</option>
+            </select>
+          </div>
+
+          <div class="field ai-setting">
+            <span>Engine import PDF</span>
+            <select id="pdfEngineInput">
+              <option value="auto">Tự động</option>
+              <option value="gemini">Google AI Studio</option>
+              <option value="text">PDF text</option>
+            </select>
+          </div>
+
+          <div class="field ai-setting">
+            <span>Engine import ảnh</span>
+            <select id="imageEngineInput">
+              <option value="gemini">Google AI Studio</option>
+              <option value="tesseract">Tesseract OCR</option>
+            </select>
+          </div>
+
+          <label class="field">
+            <span>Google AI Studio API Key</span>
+            <input id="geminiKeyInput" type="password" autocomplete="off" placeholder="AIza... hoặc dùng .env">
+          </label>
+
+          <label class="field">
+            <span>Gemini model</span>
+            <select id="geminiModelInput">
+              <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+              <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+              <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+              <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+              <option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
+            </select>
+          </label>
+
+          <button id="saveGeminiBtn" class="wide-button secondary-wide-button" type="button">
+            <i data-lucide="key-round"></i>
+            <span>Lưu cấu hình AI</span>
+          </button>
+
+          <button id="loadGeminiModelsBtn" class="wide-button secondary-wide-button" type="button">
+            <i data-lucide="refresh-cw"></i>
+            <span>Tải model khả dụng</span>
+          </button>
+
           <label class="field grow">
             <span>Nội dung câu hỏi</span>
             <textarea id="stemInput" rows="8"></textarea>
+          </label>
+
+          <label class="field">
+            <span>Lựa chọn</span>
+            <textarea id="optionsInput" rows="5" placeholder="A. ...
+B. ...
+C. ...
+D. ..."></textarea>
           </label>
 
           <button id="applyEditBtn" class="wide-button" type="button">
@@ -107,10 +176,26 @@
             <span>Cập nhật</span>
           </button>
 
+          <button id="addQuestionBtn" class="wide-button secondary-wide-button" type="button">
+            <i data-lucide="plus"></i>
+            <span>Thêm câu mới</span>
+          </button>
+
+          <div class="danger-actions">
+            <button id="deleteQuestionBtn" type="button">
+              <i data-lucide="trash-2"></i>
+              <span>Xóa câu hiện tại</span>
+            </button>
+            <button id="clearQuestionsBtn" type="button">
+              <i data-lucide="trash"></i>
+              <span>Xóa tất cả</span>
+            </button>
+          </div>
+
           <div class="mini-stats">
             <div>
               <strong id="pageCount">0</strong>
-              <span>trang PDF</span>
+              <span>trang/ảnh</span>
             </div>
             <div>
               <strong id="parsedCount">0</strong>
@@ -129,7 +214,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/settings.js"></script>
+    <script src="assets/js/parsers.js"></script>
+    <script src="assets/js/gemini.js"></script>
+    <script src="assets/js/image-processing.js"></script>
+    <script src="assets/js/importers.js"></script>
+    <script src="assets/js/questions-ui.js"></script>
+    <script src="assets/js/exporters.js"></script>
     <script src="assets/app.js"></script>
   </body>
 </html>
