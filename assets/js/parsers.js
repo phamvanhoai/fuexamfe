@@ -99,7 +99,9 @@ function parseImageQuestions(rawText, fallbackNumber = 1) {
     let kind = normalizeKind((match[2] || "").replace(/[()]/g, ""));
     let block = text.slice(match.index + match[0].length, next ? next.index : text.length).trim();
 
-    const inlineKind = block.match(/^\s*\(?\s*(Choose\s+\d+\s+answers?|Choose\s+one answer|Choose\s+many answers?)\s*\)?/i);
+    const inlineKind = block.match(
+      /^\s*\(?\s*(Choose\s+(?:\d+|one|two|three|four|five|six|seven|eight)\s+answers?|Choose\s+many answers?)\s*\)?/i
+    );
     if (inlineKind) {
       kind = normalizeKind(inlineKind[1]);
       block = block.slice(inlineKind[0].length).trim();
@@ -248,10 +250,29 @@ function cleanParagraph(text) {
 
 function normalizeKind(kind) {
   const cleaned = cleanParagraph(kind || "");
+  if (!cleaned) return "Choose 1 answer";
+
+  const numberWords = {
+    one: 1,
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7,
+    eight: 8,
+  };
+  const numericKind = cleaned.match(/\bchoose\s+(\d+|one|two|three|four|five|six|seven|eight)\s+answers?\b/i);
+  if (numericKind) {
+    const rawCount = numericKind[1].toLowerCase();
+    const count = Number(rawCount) || numberWords[rawCount] || 1;
+    return `Choose ${count} ${count === 1 ? "answer" : "answers"}`;
+  }
+
   if (/many|multiple|nhiều/i.test(cleaned) && !/choice/i.test(cleaned)) {
     return "Choose many answers";
   }
-  return cleaned || "Choose 1 answer";
+  return cleaned;
 }
 
 function fallbackQuestion(text, number = 1) {

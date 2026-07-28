@@ -183,27 +183,15 @@ function downloadBlob(blob, filename) {
 }
 
 function formatAllQuestionsText() {
-  const title = stripKnownExtension(state.fileName || "questions");
-  const answerLine = state.questions
-    .filter((question) => question.answer)
-    .map((question) => `${question.number}${question.answer}`)
-    .join(" ");
-  const parts = [
-    `=== ${title} ===`,
-    `Footer: ${state.footer || DEFAULT_FOOTER_NAME}`,
-    `Tổng số câu: ${state.questions.length}`,
-  ];
-
-  if (answerLine) {
-    parts.push("", "FORMAT ĐÁP ÁN:", answerLine);
-  }
-
-  parts.push("", ...state.questions.map(formatQuestionText));
-  return `${parts.join("\n")}\n`;
+  return `${state.questions.map(formatQuestionText).join("\n\n")}\n`;
 }
 
 function formatQuestionText(question) {
-  const lines = [`${question.number}. (${question.kind || "Choose 1 answer"})`, "", question.stem || ""];
+  const lines = [`${question.number}. (${question.kind || "Choose 1 answer"})`];
+
+  if (question.stem) {
+    lines.push(question.stem);
+  }
 
   if (question.imageName) {
     lines.push(`[Ảnh: ${question.imageName}]`);
@@ -211,10 +199,6 @@ function formatQuestionText(question) {
 
   for (const option of question.options) {
     lines.push(`${option.label}. ${option.text || ""}`.trimEnd());
-  }
-
-  if (question.answer) {
-    lines.push(`Đáp án: ${question.answer}`);
   }
 
   if (question.rawOcr && !question.options.length) {

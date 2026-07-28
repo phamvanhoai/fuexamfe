@@ -59,12 +59,25 @@ function renderCurrentQuestion() {
   els.questionMount.append(buildQuestionCard(question, { interactive: true }));
   els.currentIndex.textContent = `${state.current + 1}/${state.questions.length}`;
   els.answerInput.value = question.answer || "";
-  els.kindInput.value = question.kind === "Choose many answers" ? "Choose many answers" : "Choose 1 answer";
+  question.kind = normalizeKind(question.kind || "Choose 1 answer");
+  ensureKindOption(question.kind);
+  els.kindInput.value = question.kind;
   els.footerInput.value = state.footer;
   els.exportNameInput.value = state.exportName;
   els.stemInput.value = question.stem || "";
   els.optionsInput.value = formatOptionsForEditor(question.options);
   refreshIcons();
+}
+
+function ensureKindOption(kind) {
+  if (!kind) return;
+  const exists = [...els.kindInput.options].some((option) => option.value === kind);
+  if (exists) return;
+
+  const option = document.createElement("option");
+  option.value = kind;
+  option.textContent = kind;
+  els.kindInput.append(option);
 }
 
 function buildQuestionCard(question, options = {}) {
@@ -145,12 +158,15 @@ function toggleAnswer(label) {
   if (!question || !label) return;
 
   const current = sanitizeAnswer(question.answer);
-  const multi = question.kind === "Choose many answers" || current.length > 1;
+  const limit = getKindAnswerLimit(question.kind);
 
-  if (multi) {
+  if (limit !== 1) {
     const set = new Set(current.split(""));
     if (set.has(label)) {
       set.delete(label);
+    } else if (Number.isFinite(limit) && set.size >= limit) {
+      showToast(`Câu này chỉ chọn ${limit} đáp án`);
+      return;
     } else {
       set.add(label);
     }
@@ -161,6 +177,20 @@ function toggleAnswer(label) {
 
   renderCurrentQuestion();
   renderQuestionList();
+}
+
+function getKindAnswerLimit(kind) {
+  const normalized = normalizeKind(kind || "Choose 1 answer");
+  const numeric = normalized.match(/\bchoose\s+(\d+)\s+answers?\b/i);
+  if (numeric) return Math.max(1, Number(numeric[1]) || 1);
+  if (/many|multiple/i.test(normalized)) return Infinity;
+  return 1;
+}
+
+function sanitizeAnswerForKind(value, kind) {
+  const answer = sanitizeAnswer(value);
+  const limit = getKindAnswerLimit(kind);
+  return Number.isFinite(limit) ? answer.slice(0, limit) : answer;
 }
 
 function formatOptionsForEditor(options) {
@@ -193,8 +223,8 @@ function applyEditorChanges() {
   const question = state.questions[state.current];
   if (!question) return;
 
-  question.answer = sanitizeAnswer(els.answerInput.value);
-  question.kind = els.kindInput.value;
+  question.kind = normalizeKind(els.kindInput.value);
+  question.answer = sanitizeAnswerForKind(els.answerInput.value, question.kind);
   question.stem = cleanParagraph(els.stemInput.value);
   question.options = parseOptionsFromEditor(els.optionsInput.value);
   setFooterName(els.footerInput.value);
@@ -206,13 +236,14 @@ function applyEditorChanges() {
 
 function addManualQuestion() {
   const number = state.questions.length + 1;
+  const kind = normalizeKind(els.kindInput.value || "Choose 1 answer");
   const question = {
     number,
-    kind: els.kindInput.value || "Choose 1 answer",
+    kind,
     type: "Multiple Choice",
     stem: cleanParagraph(els.stemInput.value) || `Câu ${number}`,
     options: parseOptionsFromEditor(els.optionsInput.value),
-    answer: sanitizeAnswer(els.answerInput.value),
+    answer: sanitizeAnswerForKind(els.answerInput.value, kind),
   };
 
   state.questions.push(question);

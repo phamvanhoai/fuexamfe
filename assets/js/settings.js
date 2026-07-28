@@ -21,6 +21,55 @@ function setExportName(value) {
   saveSetting(EXPORT_NAME_STORAGE_KEY, state.exportName);
 }
 
+function syncQuestionFontControls() {
+  els.fontScaleInput.value = state.questionFontScale;
+  els.fontScaleNumberInput.value = state.questionFontScale;
+}
+
+function applyQuestionFontScale(value, options = {}) {
+  state.questionFontScale = normalizeQuestionFontScale(value);
+  const scale = state.questionFontScale / 100;
+  const rootStyle = document.documentElement.style;
+  const pixelVars = {
+    "--question-title-size": 26,
+    "--question-badge-size": 15,
+    "--answer-dot-size": 36,
+    "--answer-dot-font-size": 22,
+    "--answer-label-size": 14,
+    "--question-text-min-size": 22,
+    "--question-text-max-size": 36,
+    "--choice-text-min-size": 21,
+    "--choice-text-max-size": 34,
+    "--shot-footer-size": 12,
+    "--question-mobile-text-size": 20,
+    "--choice-mobile-text-size": 19,
+    "--answer-mobile-dot-size": 32,
+    "--answer-mobile-dot-font-size": 18,
+    "--answer-mobile-label-size": 12,
+  };
+
+  rootStyle.setProperty("--question-font-scale", scale.toFixed(2));
+  Object.entries(pixelVars).forEach(([name, base]) => {
+    rootStyle.setProperty(name, `${(base * scale).toFixed(2)}px`);
+  });
+  rootStyle.setProperty("--question-text-fluid-size", `${(2.1 * scale).toFixed(3)}vw`);
+  rootStyle.setProperty("--choice-text-fluid-size", `${(2 * scale).toFixed(3)}vw`);
+  syncQuestionFontControls();
+
+  if (options.persist !== false) {
+    saveSetting(QUESTION_FONT_SCALE_STORAGE_KEY, state.questionFontScale);
+  }
+}
+
+function handleQuestionFontScaleChange(event) {
+  applyQuestionFontScale(event.target.value);
+}
+
+function resetQuestionFontScale() {
+  applyQuestionFontScale(DEFAULT_QUESTION_FONT_SCALE);
+  showToast("Đã reset cỡ chữ");
+}
+
 async function loadGeminiEnvConfig() {
   try {
     const response = await fetch(`.env?_=${Date.now()}`, { cache: "no-store" });
@@ -223,6 +272,9 @@ function updateActionButtons() {
   els.footerInput.disabled = state.busy;
   els.resetFooterBtn.disabled = state.busy;
   els.exportNameInput.disabled = state.busy;
+  els.fontScaleInput.disabled = state.busy;
+  els.fontScaleNumberInput.disabled = state.busy;
+  els.resetFontScaleBtn.disabled = state.busy;
   els.importAnswerModeInput.disabled = state.busy;
   els.pdfEngineInput.disabled = state.busy;
   els.imageEngineInput.disabled = state.busy;

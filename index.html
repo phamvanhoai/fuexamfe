@@ -88,6 +88,9 @@
             <span>Loại câu</span>
             <select id="kindInput">
               <option value="Choose 1 answer">Choose 1 answer</option>
+              <option value="Choose 2 answers">Choose 2 answers</option>
+              <option value="Choose 3 answers">Choose 3 answers</option>
+              <option value="Choose 4 answers">Choose 4 answers</option>
               <option value="Choose many answers">Choose many answers</option>
             </select>
           </label>
@@ -106,6 +109,17 @@
             <span>Tên file export</span>
             <input id="exportNameInput" type="text" value="questions" placeholder="questions">
           </label>
+
+          <div class="field font-size-setting">
+            <span>Cỡ chữ câu hỏi</span>
+            <div class="font-size-controls">
+              <input id="fontScaleInput" type="range" min="60" max="135" step="5" value="100" aria-label="Cỡ chữ câu hỏi">
+              <input id="fontScaleNumberInput" type="number" min="60" max="135" step="5" value="100" aria-label="Phần trăm cỡ chữ">
+              <button id="resetFontScaleBtn" type="button" title="Reset cỡ chữ">
+                <i data-lucide="rotate-ccw"></i>
+              </button>
+            </div>
+          </div>
 
           <div class="field ai-setting">
             <span>Đáp án khi import</span>

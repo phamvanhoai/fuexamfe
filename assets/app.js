@@ -11,6 +11,9 @@ function init() {
   els.footerInput.addEventListener("input", handleFooterChange);
   els.resetFooterBtn.addEventListener("click", resetFooterName);
   els.exportNameInput.addEventListener("input", handleExportNameChange);
+  els.fontScaleInput.addEventListener("input", handleQuestionFontScaleChange);
+  els.fontScaleNumberInput.addEventListener("change", handleQuestionFontScaleChange);
+  els.resetFontScaleBtn.addEventListener("click", resetQuestionFontScale);
   els.importAnswerModeInput.addEventListener("change", handleImportAnswerModeChange);
   els.pdfEngineInput.addEventListener("change", handlePdfEngineChange);
   els.imageEngineInput.addEventListener("change", handleImageEngineChange);
@@ -26,6 +29,7 @@ function init() {
   els.exportPdfBtn.addEventListener("click", exportAllPdf);
 
   syncGeminiInputs();
+  applyQuestionFontScale(state.questionFontScale, { persist: false });
   render();
   refreshIcons();
   loadGeminiEnvConfig();
