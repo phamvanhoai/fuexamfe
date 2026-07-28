@@ -122,6 +122,8 @@ function createImageQuestion(slice, number, rawOcr) {
     options: [],
     answer: "",
     imageSrc: slice.url,
+    sourceImageSrc: slice.url,
+    cropRegion: { x: 0, y: 0, width: 1000, height: 1000 },
     imageName: slice.name,
     rawOcr,
   };
@@ -198,15 +200,17 @@ const cropEditorState = {
 
 function openCropEditor() {
   const question = state.questions[state.current];
-  if (!question?.sourceImageSrc) {
+  const sourceImage = question?.sourceImageSrc || question?.imageSrc;
+  if (!sourceImage) {
     showToast("Câu này không có ảnh gốc để chỉnh");
     return;
   }
 
+  question.sourceImageSrc = sourceImage;
   cropEditorState.question = question;
   cropEditorState.region = { ...(question.cropRegion || { x: 0, y: 0, width: 1000, height: 1000 }) };
   els.cropSourceImage.onload = updateCropSelection;
-  els.cropSourceImage.src = question.sourceImageSrc;
+  els.cropSourceImage.src = sourceImage;
   els.cropModal.hidden = false;
   document.body.style.overflow = "hidden";
   refreshIcons();

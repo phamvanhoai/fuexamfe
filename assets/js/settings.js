@@ -295,7 +295,7 @@ function updateActionButtons() {
   els.pdfInput.disabled = state.busy;
   els.imageInput.disabled = state.busy;
   const currentQuestion = state.questions[state.current];
-  els.cropImageBtn.disabled = state.busy || !currentQuestion?.sourceImageSrc;
+  els.cropImageBtn.disabled = state.busy || !(currentQuestion?.sourceImageSrc || currentQuestion?.imageSrc);
 }
 
 function setBusy(busy) {

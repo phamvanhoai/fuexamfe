@@ -203,6 +203,11 @@ async function extractQuestionsFromImages(files, unitLabel) {
         if (parsed.length) {
           parsed.forEach((question) => {
             question.rawOcr = rawText;
+            question.imageSrc = slice.url;
+            question.sourceImageSrc = slice.url;
+            question.cropRegion = { x: 0, y: 0, width: 1000, height: 1000 };
+            question.imageName = slice.name;
+            question.type = "Image Question";
           });
           allQuestions.push(...parsed);
         } else {
