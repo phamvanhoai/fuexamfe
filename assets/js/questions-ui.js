@@ -51,6 +51,7 @@ function renderCurrentQuestion() {
     els.kindInput.value = "Choose 1 answer";
     els.footerInput.value = state.footer;
     els.exportNameInput.value = state.exportName;
+    els.subjectCodeInput.value = state.subjectCode;
     els.stemInput.value = "";
     els.optionsInput.value = "";
     return;
@@ -64,6 +65,7 @@ function renderCurrentQuestion() {
   els.kindInput.value = question.kind;
   els.footerInput.value = state.footer;
   els.exportNameInput.value = state.exportName;
+  els.subjectCodeInput.value = state.subjectCode;
   els.stemInput.value = question.stem || "";
   els.optionsInput.value = formatOptionsForEditor(question.options);
   refreshIcons();
@@ -84,7 +86,7 @@ function buildQuestionCard(question, options = {}) {
   const interactive = Boolean(options.interactive);
   const exportMode = Boolean(options.exportMode);
   const card = document.createElement("article");
-  card.className = `exam-shot${exportMode ? " export-shot" : ""}${question.imageSrc ? " has-image" : ""}`;
+  card.className = `exam-shot${exportMode ? " export-shot" : ""}${question.imageSrc ? " has-image" : ""}${state.showAnswerControls ? "" : " hide-answer-controls"}`;
 
   const labels = getChoiceLabels(question);
   const answerSet = new Set((question.answer || "").split(""));
@@ -113,12 +115,13 @@ function buildQuestionCard(question, options = {}) {
     <header class="shot-header">
       <h2>Câu ${escapeHtml(question.number)}</h2>
       <div class="badges">
+        ${state.subjectCode ? `<span class="badge subject-code">${escapeHtml(state.subjectCode)}</span>` : ""}
         <span class="badge answer-kind">${escapeHtml(question.kind || "Choose 1 answer")}</span>
         <span class="badge question-kind">${escapeHtml(question.type || "Multiple Choice")}</span>
       </div>
     </header>
     <div class="shot-body">
-      <aside class="answer-rail">
+      ${state.showAnswerControls ? `<aside class="answer-rail">
         ${labels
           .map(
             (label) => `
@@ -127,7 +130,7 @@ function buildQuestionCard(question, options = {}) {
           )
           .join("")}
         ${question.answer ? `<span class="answer-label">Đáp án: ${escapeHtml(question.answer)}</span>` : ""}
-      </aside>
+      </aside>` : ""}
       <section class="question-content">
         ${question.stem ? `<p class="question-text">${escapeHtml(question.stem || "")}</p>` : ""}
         ${imageMarkup}
@@ -306,8 +309,26 @@ function handleExportNameChange() {
   setExportName(els.exportNameInput.value);
 }
 
+function handleSubjectCodeChange() {
+  setSubjectCode(els.subjectCodeInput.value);
+  renderCurrentQuestion();
+}
+
 function handleImportAnswerModeChange() {
   state.importAnswerMode = els.importAnswerModeInput.value === "blank" ? "blank" : "keep";
   saveSetting(IMPORT_ANSWER_MODE_STORAGE_KEY, state.importAnswerMode);
+  if (state.importAnswerMode === "blank") {
+    state.showAnswerControls = false;
+    els.answerControlsInput.value = "hide";
+    saveSetting(ANSWER_CONTROLS_STORAGE_KEY, "hide");
+    renderCurrentQuestion();
+  }
   showToast(state.importAnswerMode === "blank" ? "Import sẽ không chọn đáp án" : "Import sẽ giữ đáp án nếu có");
+}
+
+function handleAnswerControlsChange() {
+  state.showAnswerControls = els.answerControlsInput.value !== "hide";
+  saveSetting(ANSWER_CONTROLS_STORAGE_KEY, state.showAnswerControls ? "show" : "hide");
+  renderCurrentQuestion();
+  showToast(state.showAnswerControls ? "Đã hiện vùng chọn đáp án" : "Đã ẩn vùng chọn đáp án");
 }

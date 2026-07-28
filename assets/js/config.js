@@ -1,10 +1,12 @@
 const DEFAULT_FOOTER_NAME = "FUEXAMFE";
 const FOOTER_STORAGE_KEY = "fuexamfe.footerName";
 const EXPORT_NAME_STORAGE_KEY = "fuexamfe.exportName";
+const SUBJECT_CODE_STORAGE_KEY = "fuexamfe.subjectCode";
 const QUESTION_FONT_SCALE_STORAGE_KEY = "fuexamfe.questionFontScale";
 const GEMINI_KEY_STORAGE_KEY = "fuexamfe.geminiApiKey";
 const GEMINI_MODEL_STORAGE_KEY = "fuexamfe.geminiModel";
 const IMPORT_ANSWER_MODE_STORAGE_KEY = "fuexamfe.importAnswerMode";
+const ANSWER_CONTROLS_STORAGE_KEY = "fuexamfe.answerControls";
 const PDF_ENGINE_STORAGE_KEY = "fuexamfe.pdfEngine";
 const IMAGE_ENGINE_STORAGE_KEY = "fuexamfe.imageEngine";
 const DEFAULT_QUESTION_FONT_SCALE = 100;
@@ -58,8 +60,10 @@ const state = {
   pageCount: 0,
   footer: loadFooterName(),
   exportName: loadSetting(EXPORT_NAME_STORAGE_KEY, "questions"),
+  subjectCode: loadSetting(SUBJECT_CODE_STORAGE_KEY, ""),
   questionFontScale: normalizeQuestionFontScale(loadSetting(QUESTION_FONT_SCALE_STORAGE_KEY, DEFAULT_QUESTION_FONT_SCALE)),
   importAnswerMode: loadSetting(IMPORT_ANSWER_MODE_STORAGE_KEY, "keep"),
+  showAnswerControls: loadSetting(ANSWER_CONTROLS_STORAGE_KEY, "show") !== "hide",
   pdfEngine: loadSetting(PDF_ENGINE_STORAGE_KEY, "auto"),
   imageEngine: loadSetting(IMAGE_ENGINE_STORAGE_KEY, "gemini"),
   geminiApiKey: loadSetting(GEMINI_KEY_STORAGE_KEY, ""),
@@ -82,10 +86,12 @@ const els = {
   footerInput: document.querySelector("#footerInput"),
   resetFooterBtn: document.querySelector("#resetFooterBtn"),
   exportNameInput: document.querySelector("#exportNameInput"),
+  subjectCodeInput: document.querySelector("#subjectCodeInput"),
   fontScaleInput: document.querySelector("#fontScaleInput"),
   fontScaleNumberInput: document.querySelector("#fontScaleNumberInput"),
   resetFontScaleBtn: document.querySelector("#resetFontScaleBtn"),
   importAnswerModeInput: document.querySelector("#importAnswerModeInput"),
+  answerControlsInput: document.querySelector("#answerControlsInput"),
   pdfEngineInput: document.querySelector("#pdfEngineInput"),
   imageEngineInput: document.querySelector("#imageEngineInput"),
   geminiKeyInput: document.querySelector("#geminiKeyInput"),

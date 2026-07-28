@@ -20,6 +20,11 @@ function setExportName(value) {
   saveSetting(EXPORT_NAME_STORAGE_KEY, state.exportName);
 }
 
+function setSubjectCode(value) {
+  state.subjectCode = String(value || "").trim().toUpperCase().slice(0, 24);
+  saveSetting(SUBJECT_CODE_STORAGE_KEY, state.subjectCode);
+}
+
 function syncQuestionFontControls() {
   els.fontScaleInput.value = state.questionFontScale;
   els.fontScaleNumberInput.value = state.questionFontScale;
@@ -83,6 +88,9 @@ async function loadGeminiEnvConfig() {
     }
     if (env.IMPORT_ANSWER_MODE && !hasStoredSetting(IMPORT_ANSWER_MODE_STORAGE_KEY)) {
       state.importAnswerMode = env.IMPORT_ANSWER_MODE === "blank" ? "blank" : "keep";
+      if (state.importAnswerMode === "blank" && !hasStoredSetting(ANSWER_CONTROLS_STORAGE_KEY)) {
+        state.showAnswerControls = false;
+      }
     }
     if (env.PDF_ENGINE && !hasStoredSetting(PDF_ENGINE_STORAGE_KEY)) {
       state.pdfEngine = ["auto", "gemini", "text"].includes(env.PDF_ENGINE) ? env.PDF_ENGINE : "auto";
@@ -120,6 +128,7 @@ function isPlaceholderValue(value) {
 
 function syncGeminiInputs() {
   els.importAnswerModeInput.value = state.importAnswerMode;
+  els.answerControlsInput.value = state.showAnswerControls ? "show" : "hide";
   els.pdfEngineInput.value = state.pdfEngine;
   els.imageEngineInput.value = state.imageEngine;
   els.geminiKeyInput.value = state.geminiApiKey;
@@ -271,10 +280,12 @@ function updateActionButtons() {
   els.footerInput.disabled = state.busy;
   els.resetFooterBtn.disabled = state.busy;
   els.exportNameInput.disabled = state.busy;
+  els.subjectCodeInput.disabled = state.busy;
   els.fontScaleInput.disabled = state.busy;
   els.fontScaleNumberInput.disabled = state.busy;
   els.resetFontScaleBtn.disabled = state.busy;
   els.importAnswerModeInput.disabled = state.busy;
+  els.answerControlsInput.disabled = state.busy;
   els.pdfEngineInput.disabled = state.busy;
   els.imageEngineInput.disabled = state.busy;
   els.geminiKeyInput.disabled = state.busy;

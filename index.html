@@ -110,6 +110,11 @@
             <input id="exportNameInput" type="text" value="questions" placeholder="questions">
           </label>
 
+          <label class="field">
+            <span>Mã môn</span>
+            <input id="subjectCodeInput" type="text" maxlength="24" placeholder="Ví dụ: DCD301">
+          </label>
+
           <div class="field font-size-setting">
             <span>Cỡ chữ câu hỏi</span>
             <div class="font-size-controls">
@@ -126,6 +131,14 @@
             <select id="importAnswerModeInput">
               <option value="keep">Giữ đáp án nếu có</option>
               <option value="blank">Không chọn đáp án</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <span>Vùng chọn đáp án</span>
+            <select id="answerControlsInput">
+              <option value="show">Hiển thị</option>
+              <option value="hide">Ẩn để tiết kiệm diện tích</option>
             </select>
           </div>
 

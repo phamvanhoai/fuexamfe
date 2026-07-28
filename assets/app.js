@@ -21,10 +21,12 @@ function init() {
   els.footerInput.addEventListener("input", handleFooterChange);
   els.resetFooterBtn.addEventListener("click", resetFooterName);
   els.exportNameInput.addEventListener("input", handleExportNameChange);
+  els.subjectCodeInput.addEventListener("input", handleSubjectCodeChange);
   els.fontScaleInput.addEventListener("input", handleQuestionFontScaleChange);
   els.fontScaleNumberInput.addEventListener("change", handleQuestionFontScaleChange);
   els.resetFontScaleBtn.addEventListener("click", resetQuestionFontScale);
   els.importAnswerModeInput.addEventListener("change", handleImportAnswerModeChange);
+  els.answerControlsInput.addEventListener("change", handleAnswerControlsChange);
   els.pdfEngineInput.addEventListener("change", handlePdfEngineChange);
   els.imageEngineInput.addEventListener("change", handleImageEngineChange);
   els.saveGeminiBtn.addEventListener("click", saveGeminiSettings);
