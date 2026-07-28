@@ -578,8 +578,8 @@ button:disabled {
 
 .choices {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: 1fr;
+  gap: 4px;
   margin: 0;
   padding: 0;
 }
@@ -589,11 +589,11 @@ button:disabled {
   grid-template-columns: 42px minmax(0, 1fr);
   gap: 12px;
   align-items: center;
-  min-height: 58px;
-  padding: 10px 14px;
-  border: 1px solid #e2e8f0;
-  border-radius: 13px;
-  background: rgba(248, 250, 252, 0.78);
+  min-height: 44px;
+  padding: 4px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: #1e293b;
   font-size: clamp(var(--choice-text-min-size), var(--choice-text-fluid-size), var(--choice-text-max-size));
   line-height: 1.25;
@@ -615,8 +615,8 @@ button:disabled {
 }
 
 .choice-row.correct {
-  border-color: #a5b4fc;
-  background: #eef2ff;
+  border-color: transparent;
+  background: transparent;
 }
 
 .choice-row.correct .letter,
