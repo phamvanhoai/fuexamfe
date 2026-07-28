@@ -44,6 +44,8 @@ function renderQuestionList() {
 function renderCurrentQuestion() {
   els.questionMount.textContent = "";
   const question = state.questions[state.current];
+  els.cropImageBtn.disabled =
+    state.busy || !question || !(question.sourceImageSrc || question.imageSrc);
 
   if (!question) {
     els.currentIndex.textContent = "-";
