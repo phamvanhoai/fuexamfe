@@ -213,7 +213,7 @@ function makeBaseName() {
 }
 
 function makeExportBaseName() {
-  return slugify(state.exportName || makeBaseName()).slice(0, 48) || "questions";
+  return sanitizeExportName(state.exportName || makeBaseName()).slice(0, 48) || "questions";
 }
 
 function stripKnownExtension(filename) {
@@ -227,4 +227,11 @@ function slugify(value) {
     .replace(/[^a-z0-9]+/gi, "_")
     .replace(/^_+|_+$/g, "")
     .toLowerCase();
+}
+
+function sanitizeExportName(value) {
+  return String(value || "")
+    .replace(/[<>:"/\\|?*\u0000-\u001f]/g, "")
+    .replace(/[.\s]+$/g, "")
+    .trimStart();
 }

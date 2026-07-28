@@ -82,6 +82,12 @@ function buildGeminiExtractionPrompt(label) {
     "If no correct answer is visible, answer must be an empty string.",
     "For kind, use text like Choose 1 answer or Choose 3 answers.",
     "Use option labels A-H only. Ignore watermarks, page titles, and decorative text.",
+    "Set hasVisual to true when a question depends on a diagram, chart, graph, table, circuit, map, formula image, or other non-text visual.",
+    "When hasVisual is true, imageRegion must cover the complete visual, including every axis label, variable name, legend, arrow, border, and annotation that belongs to it.",
+    "Do not include the question stem, answer choices, page header, page footer, or unrelated text in imageRegion.",
+    "Leave a small safe margin around the complete visual; never cut through labels or the outer border.",
+    "imageRegion coordinates are integers from 0 to 1000 relative to the full input image: x and y are the top-left corner, width and height are the region size.",
+    "When no visual is needed, set hasVisual to false and imageRegion to x=0, y=0, width=0, height=0.",
   ].join("\n");
 }
 
@@ -109,8 +115,19 @@ function getQuestionSchema() {
               },
             },
             answer: { type: "string" },
+            hasVisual: { type: "boolean" },
+            imageRegion: {
+              type: "object",
+              properties: {
+                x: { type: "integer" },
+                y: { type: "integer" },
+                width: { type: "integer" },
+                height: { type: "integer" },
+              },
+              required: ["x", "y", "width", "height"],
+            },
           },
-          required: ["number", "kind", "stem", "options", "answer"],
+          required: ["number", "kind", "stem", "options", "answer", "hasVisual", "imageRegion"],
         },
       },
     },
@@ -138,6 +155,8 @@ function normalizeGeminiQuestions(questions, fallbackNumber) {
         stem: cleanParagraph(question.stem || `Câu ${number}`),
         options,
         answer: sanitizeAnswer(question.answer || ""),
+        hasVisual: Boolean(question.hasVisual),
+        imageRegion: normalizeImageRegion(question.imageRegion),
       };
     })
     .filter((question) => question.stem || question.options.length);
@@ -146,6 +165,15 @@ function normalizeGeminiQuestions(questions, fallbackNumber) {
 function sanitizeOptionLabel(value) {
   const match = String(value || "").toUpperCase().match(/[A-H]/);
   return match ? match[0] : "";
+}
+
+function normalizeImageRegion(region) {
+  const clamp = (value) => Math.min(1000, Math.max(0, Math.round(Number(value) || 0)));
+  const x = clamp(region?.x);
+  const y = clamp(region?.y);
+  const width = Math.min(clamp(region?.width), 1000 - x);
+  const height = Math.min(clamp(region?.height), 1000 - y);
+  return { x, y, width, height };
 }
 
 function getGeminiMimeType(blob) {

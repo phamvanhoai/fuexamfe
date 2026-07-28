@@ -190,6 +190,11 @@ D. ..."></textarea>
             <span>Cập nhật</span>
           </button>
 
+          <button id="cropImageBtn" class="wide-button secondary-wide-button" type="button">
+            <i data-lucide="crop"></i>
+            <span>Chỉnh vùng hình</span>
+          </button>
+
           <button id="addQuestionBtn" class="wide-button secondary-wide-button" type="button">
             <i data-lucide="plus"></i>
             <span>Thêm câu mới</span>
@@ -222,6 +227,31 @@ D. ..."></textarea>
 
     <div id="toast" role="status" aria-live="polite"></div>
     <div id="exportSandbox" aria-hidden="true"></div>
+
+    <div id="cropModal" class="crop-modal" hidden>
+      <div class="crop-dialog" role="dialog" aria-modal="true" aria-labelledby="cropDialogTitle">
+        <div class="crop-dialog-head">
+          <h2 id="cropDialogTitle">Chỉnh vùng hình</h2>
+          <button id="closeCropBtn" type="button" title="Đóng">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <p>Kéo bên trong khung để di chuyển; kéo các góc để thay đổi kích thước.</p>
+        <div id="cropStage" class="crop-stage">
+          <img id="cropSourceImage" alt="Ảnh gốc để chỉnh vùng cắt">
+          <div id="cropSelection" class="crop-selection">
+            <span class="crop-handle nw" data-handle="nw"></span>
+            <span class="crop-handle ne" data-handle="ne"></span>
+            <span class="crop-handle sw" data-handle="sw"></span>
+            <span class="crop-handle se" data-handle="se"></span>
+          </div>
+        </div>
+        <div class="crop-dialog-actions">
+          <button id="cancelCropBtn" type="button">Hủy</button>
+          <button id="saveCropBtn" type="button">Lưu vùng cắt</button>
+        </div>
+      </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>

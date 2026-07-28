@@ -156,6 +156,7 @@ async function extractQuestionsFromImages(files, unitLabel) {
         showToast(`Đang đọc bằng Gemini ${fileLabel}`);
         try {
           const parsed = await extractQuestionsWithGeminiRetry(file, fileLabel, allQuestions.length + 1);
+          await attachQuestionVisuals(file, parsed);
           if (parsed.length) {
             allQuestions.push(...parsed);
           } else {

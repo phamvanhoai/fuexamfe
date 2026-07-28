@@ -95,6 +95,7 @@ const els = {
   stemInput: document.querySelector("#stemInput"),
   optionsInput: document.querySelector("#optionsInput"),
   applyEditBtn: document.querySelector("#applyEditBtn"),
+  cropImageBtn: document.querySelector("#cropImageBtn"),
   addQuestionBtn: document.querySelector("#addQuestionBtn"),
   deleteQuestionBtn: document.querySelector("#deleteQuestionBtn"),
   clearQuestionsBtn: document.querySelector("#clearQuestionsBtn"),
@@ -108,5 +109,12 @@ const els = {
   parsedCount: document.querySelector("#parsedCount"),
   toast: document.querySelector("#toast"),
   exportSandbox: document.querySelector("#exportSandbox"),
+  cropModal: document.querySelector("#cropModal"),
+  cropStage: document.querySelector("#cropStage"),
+  cropSourceImage: document.querySelector("#cropSourceImage"),
+  cropSelection: document.querySelector("#cropSelection"),
+  closeCropBtn: document.querySelector("#closeCropBtn"),
+  cancelCropBtn: document.querySelector("#cancelCropBtn"),
+  saveCropBtn: document.querySelector("#saveCropBtn"),
 };
 

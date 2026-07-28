@@ -84,7 +84,7 @@ function buildQuestionCard(question, options = {}) {
   const interactive = Boolean(options.interactive);
   const exportMode = Boolean(options.exportMode);
   const card = document.createElement("article");
-  card.className = `exam-shot${exportMode ? " export-shot" : ""}`;
+  card.className = `exam-shot${exportMode ? " export-shot" : ""}${question.imageSrc ? " has-image" : ""}`;
 
   const labels = getChoiceLabels(question);
   const answerSet = new Set((question.answer || "").split(""));

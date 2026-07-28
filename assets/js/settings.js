@@ -16,8 +16,7 @@ function setFooterName(value) {
 }
 
 function setExportName(value) {
-  state.exportName = slugify(value || "questions").slice(0, 48) || "questions";
-  els.exportNameInput.value = state.exportName;
+  state.exportName = sanitizeExportName(value).slice(0, 48) || "questions";
   saveSetting(EXPORT_NAME_STORAGE_KEY, state.exportName);
 }
 
@@ -284,6 +283,8 @@ function updateActionButtons() {
   els.loadGeminiModelsBtn.disabled = state.busy;
   els.pdfInput.disabled = state.busy;
   els.imageInput.disabled = state.busy;
+  const currentQuestion = state.questions[state.current];
+  els.cropImageBtn.disabled = state.busy || !currentQuestion?.sourceImageSrc;
 }
 
 function setBusy(busy) {

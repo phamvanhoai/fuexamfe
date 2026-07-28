@@ -137,3 +137,186 @@ function createTextFallbackQuestion(number, message) {
     answer: "",
   };
 }
+
+async function attachQuestionVisuals(file, questions) {
+  const visualQuestions = questions.filter(
+    (question) =>
+      question.hasVisual &&
+      question.imageRegion?.width >= 20 &&
+      question.imageRegion?.height >= 20
+  );
+  if (!visualQuestions.length) return questions;
+
+  const sourceUrl = URL.createObjectURL(file);
+  try {
+    const image = await loadImage(sourceUrl);
+    const sourceWidth = image.naturalWidth || image.width;
+    const sourceHeight = image.naturalHeight || image.height;
+
+    for (const question of visualQuestions) {
+      const region = question.imageRegion;
+      const paddingX = Math.max(8, Math.round(region.width * 0.06));
+      const paddingY = Math.max(8, Math.round(region.height * 0.06));
+      const x = Math.max(0, Math.floor(((region.x - paddingX) / 1000) * sourceWidth));
+      const y = Math.max(0, Math.floor(((region.y - paddingY) / 1000) * sourceHeight));
+      const right = Math.min(
+        sourceWidth,
+        Math.ceil(((region.x + region.width + paddingX) / 1000) * sourceWidth)
+      );
+      const bottom = Math.min(
+        sourceHeight,
+        Math.ceil(((region.y + region.height + paddingY) / 1000) * sourceHeight)
+      );
+      if (right - x < 10 || bottom - y < 10) continue;
+
+      const crop = document.createElement("canvas");
+      crop.width = right - x;
+      crop.height = bottom - y;
+      crop
+        .getContext("2d")
+        .drawImage(image, x, y, crop.width, crop.height, 0, 0, crop.width, crop.height);
+
+      const blob = await canvasToBlob(crop, "image/png");
+      question.imageSrc = URL.createObjectURL(blob);
+      question.imageName = `${stripKnownExtension(file.name)}_q${question.number}_visual.png`;
+      question.sourceImageSrc = URL.createObjectURL(file);
+      question.cropRegion = { ...region };
+      question.type = "Image Question";
+    }
+  } finally {
+    URL.revokeObjectURL(sourceUrl);
+  }
+
+  return questions;
+}
+
+const cropEditorState = {
+  question: null,
+  region: null,
+  interaction: null,
+};
+
+function openCropEditor() {
+  const question = state.questions[state.current];
+  if (!question?.sourceImageSrc) {
+    showToast("Câu này không có ảnh gốc để chỉnh");
+    return;
+  }
+
+  cropEditorState.question = question;
+  cropEditorState.region = { ...(question.cropRegion || { x: 0, y: 0, width: 1000, height: 1000 }) };
+  els.cropSourceImage.onload = updateCropSelection;
+  els.cropSourceImage.src = question.sourceImageSrc;
+  els.cropModal.hidden = false;
+  document.body.style.overflow = "hidden";
+  refreshIcons();
+  if (els.cropSourceImage.complete) updateCropSelection();
+}
+
+function closeCropEditor() {
+  cropEditorState.question = null;
+  cropEditorState.interaction = null;
+  els.cropModal.hidden = true;
+  document.body.style.overflow = "";
+}
+
+function updateCropSelection() {
+  const region = cropEditorState.region;
+  if (!region) return;
+  els.cropSelection.style.left = `${region.x / 10}%`;
+  els.cropSelection.style.top = `${region.y / 10}%`;
+  els.cropSelection.style.width = `${region.width / 10}%`;
+  els.cropSelection.style.height = `${region.height / 10}%`;
+}
+
+function startCropInteraction(event) {
+  if (!cropEditorState.region) return;
+  event.preventDefault();
+  els.cropSelection.setPointerCapture?.(event.pointerId);
+  cropEditorState.interaction = {
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    handle: event.target.dataset.handle || "move",
+    initial: { ...cropEditorState.region },
+  };
+}
+
+function moveCropInteraction(event) {
+  const interaction = cropEditorState.interaction;
+  if (!interaction || interaction.pointerId !== event.pointerId) return;
+
+  const rect = els.cropStage.getBoundingClientRect();
+  const dx = ((event.clientX - interaction.startX) / rect.width) * 1000;
+  const dy = ((event.clientY - interaction.startY) / rect.height) * 1000;
+  const next = { ...interaction.initial };
+  const minSize = 40;
+
+  if (interaction.handle === "move") {
+    next.x = Math.min(1000 - next.width, Math.max(0, interaction.initial.x + dx));
+    next.y = Math.min(1000 - next.height, Math.max(0, interaction.initial.y + dy));
+  } else {
+    if (interaction.handle.includes("w")) {
+      const right = interaction.initial.x + interaction.initial.width;
+      next.x = Math.min(right - minSize, Math.max(0, interaction.initial.x + dx));
+      next.width = right - next.x;
+    }
+    if (interaction.handle.includes("e")) {
+      next.width = Math.min(1000 - next.x, Math.max(minSize, interaction.initial.width + dx));
+    }
+    if (interaction.handle.includes("n")) {
+      const bottom = interaction.initial.y + interaction.initial.height;
+      next.y = Math.min(bottom - minSize, Math.max(0, interaction.initial.y + dy));
+      next.height = bottom - next.y;
+    }
+    if (interaction.handle.includes("s")) {
+      next.height = Math.min(1000 - next.y, Math.max(minSize, interaction.initial.height + dy));
+    }
+  }
+
+  cropEditorState.region = Object.fromEntries(
+    Object.entries(next).map(([key, value]) => [key, Math.round(value)])
+  );
+  updateCropSelection();
+}
+
+function endCropInteraction(event) {
+  if (cropEditorState.interaction?.pointerId === event.pointerId) {
+    cropEditorState.interaction = null;
+  }
+}
+
+async function saveCropEditor() {
+  const question = cropEditorState.question;
+  const region = cropEditorState.region;
+  if (!question || !region) return;
+
+  const image = await loadImage(question.sourceImageSrc);
+  const width = image.naturalWidth || image.width;
+  const height = image.naturalHeight || image.height;
+  const x = Math.round((region.x / 1000) * width);
+  const y = Math.round((region.y / 1000) * height);
+  const cropWidth = Math.max(1, Math.round((region.width / 1000) * width));
+  const cropHeight = Math.max(1, Math.round((region.height / 1000) * height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.min(cropWidth, width - x);
+  canvas.height = Math.min(cropHeight, height - y);
+  canvas.getContext("2d").drawImage(
+    image,
+    x,
+    y,
+    canvas.width,
+    canvas.height,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  const blob = await canvasToBlob(canvas, "image/png");
+  question.imageSrc = URL.createObjectURL(blob);
+  question.cropRegion = { ...region };
+  closeCropEditor();
+  renderCurrentQuestion();
+  showToast("Đã lưu vùng hình");
+}

@@ -8,6 +8,16 @@ function init() {
   els.imageInput.addEventListener("change", handleImageSelect);
   els.searchInput.addEventListener("input", renderQuestionList);
   els.applyEditBtn.addEventListener("click", applyEditorChanges);
+  els.cropImageBtn.addEventListener("click", openCropEditor);
+  els.closeCropBtn.addEventListener("click", closeCropEditor);
+  els.cancelCropBtn.addEventListener("click", closeCropEditor);
+  els.saveCropBtn.addEventListener("click", saveCropEditor);
+  els.cropSelection.addEventListener("pointerdown", startCropInteraction);
+  window.addEventListener("pointermove", moveCropInteraction);
+  window.addEventListener("pointerup", endCropInteraction);
+  els.cropModal.addEventListener("click", (event) => {
+    if (event.target === els.cropModal) closeCropEditor();
+  });
   els.footerInput.addEventListener("input", handleFooterChange);
   els.resetFooterBtn.addEventListener("click", resetFooterName);
   els.exportNameInput.addEventListener("input", handleExportNameChange);
