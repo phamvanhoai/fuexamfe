@@ -61,7 +61,7 @@ function renderCurrentQuestion() {
 
   els.questionMount.append(buildQuestionCard(question, { interactive: true }));
   els.currentIndex.textContent = `${state.current + 1}/${state.questions.length}`;
-  els.answerInput.value = question.answer || "";
+  els.answerInput.value = formatAnswerDisplay(question.answer);
   question.kind = normalizeKind(question.kind || "Choose 1 answer");
   ensureKindOption(question.kind);
   els.kindInput.value = question.kind;
@@ -131,7 +131,7 @@ function buildQuestionCard(question, options = {}) {
             `
           )
           .join("")}
-        ${question.answer ? `<span class="answer-label">Đáp án: ${escapeHtml(question.answer)}</span>` : ""}
+        ${question.answer ? `<span class="answer-label">Đáp án: ${escapeHtml(formatAnswerDisplay(question.answer))}</span>` : ""}
       </aside>` : ""}
       <section class="question-content">
         ${question.stem ? `<p class="question-text">${escapeHtml(question.stem || "")}</p>` : ""}

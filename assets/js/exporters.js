@@ -201,7 +201,7 @@ function formatQuestionText(question) {
     lines.push(`${option.label}. ${option.text || ""}`.trimEnd());
   }
 
-  lines.push(`Đáp án: ${question.answer || ""}`.trimEnd());
+  lines.push(`Đáp án: ${formatAnswerDisplay(question.answer)}`.trimEnd());
 
   if (question.rawOcr && !question.options.length) {
     lines.push("", "OCR RAW:", question.rawOcr.trim());

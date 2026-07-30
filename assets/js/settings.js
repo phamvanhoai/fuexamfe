@@ -252,6 +252,10 @@ function sanitizeAnswer(value) {
     .join("");
 }
 
+function formatAnswerDisplay(value) {
+  return sanitizeAnswer(value).split("").join(", ");
+}
+
 function normalizeForSearch(value) {
   return String(value || "")
     .normalize("NFD")
