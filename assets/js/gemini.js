@@ -78,8 +78,8 @@ function buildGeminiExtractionPrompt(label) {
     `Image label: ${label}.`,
     "Return only valid JSON matching the schema.",
     "Keep the original question text and answer option text exactly as much as possible.",
-    "If the image shows a selected/correct answer, put uppercase letters in answer, for example C or AB.",
-    "If no correct answer is visible, answer must be an empty string.",
+    ...buildGeminiAnswerInstructions(),
+    "Do not include answer-key lines such as 'Đáp án: B' in the stem or options.",
     "For kind, use text like Choose 1 answer or Choose 3 answers.",
     "Use option labels A-H only. Ignore watermarks, page titles, and decorative text.",
     "Set hasVisual to true when a question depends on a diagram, chart, graph, table, circuit, map, formula image, or other non-text visual.",
@@ -89,6 +89,29 @@ function buildGeminiExtractionPrompt(label) {
     "imageRegion coordinates are integers from 0 to 1000 relative to the full input image: x and y are the top-left corner, width and height are the region size.",
     "When no visual is needed, set hasVisual to false and imageRegion to x=0, y=0, width=0, height=0.",
   ].join("\n");
+}
+
+function buildGeminiAnswerInstructions() {
+  if (state.importAnswerMode === "ai") {
+    return [
+      "Determine the correct answer for every question.",
+      "If the source explicitly prints or marks an answer, use that answer.",
+      "Otherwise solve the question carefully from its stem, options, and visual.",
+      "Put only uppercase option letters in answer, for example C or AB.",
+      "Respect kind: Choose 1 answer needs one letter; Choose 2 answers needs two letters.",
+    ];
+  }
+
+  if (state.importAnswerMode === "blank") {
+    return ["Always return an empty string in answer, even if an answer is visible in the source."];
+  }
+
+  return [
+    "Read an answer only when it is explicitly printed or visibly marked in the source, for example 'Đáp án: B', 'Answer: B', 'Correct answer: B', a checked choice, or a highlighted correct choice.",
+    "Copy that explicit answer into answer using uppercase letters only, for example C or AB.",
+    "Never solve the question and never infer an answer from your own knowledge.",
+    "If no explicit answer or correct-answer marking is visible, answer must be an empty string.",
+  ];
 }
 
 function getQuestionSchema() {

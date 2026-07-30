@@ -986,6 +986,13 @@ button:disabled {
   color: #fff;
 }
 
+.crop-dialog-actions .danger-crop-button {
+  margin-right: auto;
+  border-color: #fecaca;
+  background: #fff1f2;
+  color: #be123c;
+}
+
 .crop-stage {
   position: relative;
   align-self: center;

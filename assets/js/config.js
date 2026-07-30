@@ -122,5 +122,6 @@ const els = {
   closeCropBtn: document.querySelector("#closeCropBtn"),
   cancelCropBtn: document.querySelector("#cancelCropBtn"),
   saveCropBtn: document.querySelector("#saveCropBtn"),
+  removeQuestionImageBtn: document.querySelector("#removeQuestionImageBtn"),
 };
 

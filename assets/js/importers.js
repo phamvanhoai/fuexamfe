@@ -26,7 +26,7 @@ async function handlePdfSelect(event) {
     render();
   } catch (error) {
     console.error(error);
-    showToast("Không đọc được PDF này");
+    showToast(`Không đọc được PDF: ${error.message || "lỗi không xác định"}`);
   } finally {
     setBusy(false);
     event.target.value = "";
@@ -34,6 +34,13 @@ async function handlePdfSelect(event) {
 }
 
 async function extractQuestionsFromPdf(file) {
+  if (state.importAnswerMode === "ai") {
+    if (!state.geminiApiKey) {
+      throw new Error("Chưa có Gemini API key để AI tự chọn đáp án");
+    }
+    return extractQuestionsFromPdfWithGemini(file);
+  }
+
   if (state.pdfEngine === "gemini") {
     return extractQuestionsFromPdfWithGemini(file);
   }
@@ -130,7 +137,13 @@ async function handleImageSelect(event) {
 
 async function extractQuestionsFromImages(files, unitLabel) {
   const allQuestions = [];
-  const useGemini = state.imageEngine === "gemini" && Boolean(state.geminiApiKey);
+  if (state.importAnswerMode === "ai" && !state.geminiApiKey) {
+    throw new Error("Chưa có Gemini API key để AI tự chọn đáp án");
+  }
+
+  const useGemini =
+    (state.imageEngine === "gemini" || state.importAnswerMode === "ai") &&
+    Boolean(state.geminiApiKey);
   const canOcr = !useGemini && Boolean(window.Tesseract);
   let worker = null;
 
@@ -156,6 +169,13 @@ async function extractQuestionsFromImages(files, unitLabel) {
         showToast(`Đang đọc bằng Gemini ${fileLabel}`);
         try {
           const parsed = await extractQuestionsWithGeminiRetry(file, fileLabel, allQuestions.length + 1);
+          const sourceImageSrc = URL.createObjectURL(file);
+          parsed.forEach((question) => {
+            question.sourceImageSrc = sourceImageSrc;
+            if (!question.cropRegion) {
+              question.cropRegion = { x: 0, y: 0, width: 1000, height: 1000 };
+            }
+          });
           await attachQuestionVisuals(file, parsed);
           if (parsed.length) {
             allQuestions.push(...parsed);

@@ -12,6 +12,7 @@ function init() {
   els.closeCropBtn.addEventListener("click", closeCropEditor);
   els.cancelCropBtn.addEventListener("click", closeCropEditor);
   els.saveCropBtn.addEventListener("click", saveCropEditor);
+  els.removeQuestionImageBtn.addEventListener("click", removeQuestionImage);
   els.cropSelection.addEventListener("pointerdown", startCropInteraction);
   window.addEventListener("pointermove", moveCropInteraction);
   window.addEventListener("pointerup", endCropInteraction);

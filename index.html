@@ -129,7 +129,8 @@
           <div class="field ai-setting">
             <span>Đáp án khi import</span>
             <select id="importAnswerModeInput">
-              <option value="keep">Giữ đáp án nếu có</option>
+              <option value="keep">Dùng đáp án có sẵn trên đề</option>
+              <option value="ai">AI tự chọn đáp án</option>
               <option value="blank">Không chọn đáp án</option>
             </select>
           </div>
@@ -205,7 +206,7 @@ D. ..."></textarea>
 
           <button id="cropImageBtn" class="wide-button secondary-wide-button" type="button">
             <i data-lucide="crop"></i>
-            <span>Chỉnh vùng hình</span>
+            <span>Thêm/chỉnh vùng hình</span>
           </button>
 
           <button id="addQuestionBtn" class="wide-button secondary-wide-button" type="button">
@@ -260,6 +261,7 @@ D. ..."></textarea>
           </div>
         </div>
         <div class="crop-dialog-actions">
+          <button id="removeQuestionImageBtn" class="danger-crop-button" type="button">Xóa hình khỏi câu</button>
           <button id="cancelCropBtn" type="button">Hủy</button>
           <button id="saveCropBtn" type="button">Lưu vùng cắt</button>
         </div>

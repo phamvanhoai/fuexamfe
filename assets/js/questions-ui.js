@@ -317,7 +317,9 @@ function handleSubjectCodeChange() {
 }
 
 function handleImportAnswerModeChange() {
-  state.importAnswerMode = els.importAnswerModeInput.value === "blank" ? "blank" : "keep";
+  state.importAnswerMode = ["keep", "ai", "blank"].includes(els.importAnswerModeInput.value)
+    ? els.importAnswerModeInput.value
+    : "keep";
   saveSetting(IMPORT_ANSWER_MODE_STORAGE_KEY, state.importAnswerMode);
   if (state.importAnswerMode === "blank") {
     state.showAnswerControls = false;
@@ -325,7 +327,12 @@ function handleImportAnswerModeChange() {
     saveSetting(ANSWER_CONTROLS_STORAGE_KEY, "hide");
     renderCurrentQuestion();
   }
-  showToast(state.importAnswerMode === "blank" ? "Import sẽ không chọn đáp án" : "Import sẽ giữ đáp án nếu có");
+  const messages = {
+    blank: "Import sẽ không chọn đáp án",
+    ai: "Gemini sẽ tự giải và chọn đáp án",
+    keep: "Import sẽ dùng đáp án được ghi sẵn trên đề",
+  };
+  showToast(messages[state.importAnswerMode]);
 }
 
 function handleAnswerControlsChange() {

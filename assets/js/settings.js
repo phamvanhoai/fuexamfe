@@ -87,7 +87,9 @@ async function loadGeminiEnvConfig() {
       state.geminiModel = env.GEMINI_MODEL;
     }
     if (env.IMPORT_ANSWER_MODE && !hasStoredSetting(IMPORT_ANSWER_MODE_STORAGE_KEY)) {
-      state.importAnswerMode = env.IMPORT_ANSWER_MODE === "blank" ? "blank" : "keep";
+      state.importAnswerMode = ["keep", "ai", "blank"].includes(env.IMPORT_ANSWER_MODE)
+        ? env.IMPORT_ANSWER_MODE
+        : "keep";
       if (state.importAnswerMode === "blank" && !hasStoredSetting(ANSWER_CONTROLS_STORAGE_KEY)) {
         state.showAnswerControls = false;
       }

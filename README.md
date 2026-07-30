@@ -20,6 +20,8 @@ PDF_ENGINE=auto
 IMAGE_ENGINE=gemini
 ```
 
+`IMPORT_ANSWER_MODE` hỗ trợ `keep` (dùng đáp án có sẵn), `ai` (Gemini tự giải) hoặc `blank` (để trống).
+
 Mở `index.html` trực tiếp hoặc chạy server local:
 
 ```powershell

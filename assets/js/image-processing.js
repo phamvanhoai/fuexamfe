@@ -181,7 +181,7 @@ async function attachQuestionVisuals(file, questions) {
       const blob = await canvasToBlob(crop, "image/png");
       question.imageSrc = URL.createObjectURL(blob);
       question.imageName = `${stripKnownExtension(file.name)}_q${question.number}_visual.png`;
-      question.sourceImageSrc = URL.createObjectURL(file);
+      question.sourceImageSrc ||= URL.createObjectURL(file);
       question.cropRegion = { ...region };
       question.type = "Image Question";
     }
@@ -212,6 +212,7 @@ function openCropEditor() {
   els.cropSourceImage.onload = updateCropSelection;
   els.cropSourceImage.src = sourceImage;
   els.cropModal.hidden = false;
+  els.removeQuestionImageBtn.disabled = !question.imageSrc;
   document.body.style.overflow = "hidden";
   refreshIcons();
   if (els.cropSourceImage.complete) updateCropSelection();
@@ -319,8 +320,28 @@ async function saveCropEditor() {
 
   const blob = await canvasToBlob(canvas, "image/png");
   question.imageSrc = URL.createObjectURL(blob);
+  question.imageName ||= `question_${question.number}_visual.png`;
   question.cropRegion = { ...region };
+  question.hasVisual = true;
+  question.type = "Image Question";
   closeCropEditor();
   renderCurrentQuestion();
   showToast("Đã lưu vùng hình");
+}
+
+function removeQuestionImage() {
+  const question = cropEditorState.question || state.questions[state.current];
+  if (!question?.imageSrc) {
+    showToast("Câu này không có hình để xóa");
+    return;
+  }
+
+  question.imageSrc = "";
+  question.imageName = "";
+  question.hasVisual = false;
+  question.type = "Multiple Choice";
+  closeCropEditor();
+  renderCurrentQuestion();
+  updateActionButtons();
+  showToast("Đã xóa hình khỏi câu; ảnh gốc vẫn được giữ để có thể thêm lại");
 }
