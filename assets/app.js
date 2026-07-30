@@ -8,6 +8,7 @@ function init() {
   els.imageInput.addEventListener("change", handleImageSelect);
   els.searchInput.addEventListener("input", renderQuestionList);
   els.applyEditBtn.addEventListener("click", applyEditorChanges);
+  els.kindInput.addEventListener("change", handleQuestionKindChange);
   els.cropImageBtn.addEventListener("click", openCropEditor);
   els.closeCropBtn.addEventListener("click", closeCropEditor);
   els.cancelCropBtn.addEventListener("click", closeCropEditor);

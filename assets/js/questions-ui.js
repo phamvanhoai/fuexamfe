@@ -198,6 +198,29 @@ function sanitizeAnswerForKind(value, kind) {
   return Number.isFinite(limit) ? answer.slice(0, limit) : answer;
 }
 
+function handleQuestionKindChange() {
+  const question = state.questions[state.current];
+  if (!question) return;
+
+  const previousAnswer = sanitizeAnswer(question.answer);
+  question.kind = normalizeKind(els.kindInput.value);
+  question.answer = sanitizeAnswerForKind(previousAnswer, question.kind);
+  const removedCount = previousAnswer.length - question.answer.length;
+
+  renderCurrentQuestion();
+  renderQuestionList();
+  if (removedCount > 0) {
+    showToast(`Đã giới hạn còn ${question.answer.length} đáp án theo loại câu mới`);
+  } else {
+    const limit = getKindAnswerLimit(question.kind);
+    showToast(
+      Number.isFinite(limit)
+        ? `Câu này cho phép chọn ${limit} đáp án`
+        : "Câu này cho phép chọn nhiều đáp án"
+    );
+  }
+}
+
 function formatOptionsForEditor(options) {
   return (options || []).map((option) => `${option.label}. ${option.text || ""}`.trim()).join("\n");
 }
