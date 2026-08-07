@@ -531,6 +531,7 @@ button:disabled {
   font-weight: 520;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
+  tab-size: 4;
 }
 
 .question-image-wrap {
@@ -632,6 +633,8 @@ button:disabled {
 .choice-text {
   min-width: 0;
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  tab-size: 4;
 }
 
 .shot-footer {
@@ -673,6 +676,7 @@ button:disabled {
   outline: 0;
   padding: 10px 11px;
 }
+
 
 .footer-controls {
   display: grid;

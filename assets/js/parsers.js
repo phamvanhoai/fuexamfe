@@ -194,12 +194,11 @@ function stripAnswerLines(text) {
 function parseQuestionBlock(block) {
   const lines = block
     .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
+    .map((line) => line.replace(/[\t ]+$/g, ""));
 
   const markers = [];
   for (let i = 0; i < lines.length; i += 1) {
-    const match = lines[i].match(/^([A-H])\s*[\).]\s*(.*)$/i);
+    const match = lines[i].match(/^\s*([A-H])\s*[\).]\s*(.*)$/i);
     if (match) {
       markers.push({
         index: i,
@@ -211,13 +210,13 @@ function parseQuestionBlock(block) {
 
   if (!markers.length) {
     return {
-      stem: cleanParagraph(lines.join(" ")),
+      stem: cleanParagraph(joinWrappedLines(lines)),
       options: [],
     };
   }
 
   const firstOptionIndex = markers[0].index;
-  const stem = cleanParagraph(lines.slice(0, firstOptionIndex).join(" "));
+  const stem = cleanParagraph(joinWrappedLines(lines.slice(0, firstOptionIndex)));
   const options = [];
   const seen = new Set();
 
@@ -226,7 +225,7 @@ function parseQuestionBlock(block) {
     const nextMarker = markers[i + 1];
     const end = nextMarker ? nextMarker.index : lines.length;
     const contentLines = [marker.firstLine, ...lines.slice(marker.index + 1, end)];
-    const text = cleanParagraph(contentLines.join(" "));
+    const text = cleanParagraph(joinWrappedLines(contentLines));
 
     if (seen.has(marker.label)) continue;
     if (!text && markers.some((entry) => entry.label === marker.label && entry.index < marker.index)) continue;
@@ -241,15 +240,48 @@ function parseQuestionBlock(block) {
   return { stem, options };
 }
 
+function joinWrappedLines(lines) {
+  const paragraphs = [];
+  let current = [];
+
+  for (const line of lines) {
+    if (line) {
+      current.push(line);
+      continue;
+    }
+
+    if (current.length) {
+      paragraphs.push(joinParagraphLines(current));
+      current = [];
+    }
+  }
+
+  if (current.length) paragraphs.push(joinParagraphLines(current));
+  return paragraphs.join("\n\n");
+}
+
+function joinParagraphLines(lines) {
+  return lines.reduce((result, line, index) => {
+    if (index === 0) return line;
+    const keepsIndentation = /^\s+/.test(line);
+    return `${result}${keepsIndentation ? "\n" : " "}${line}`;
+  }, "");
+}
+
 function cleanParagraph(text) {
-  return String(text || "")
-    .replace(/\s+([,.;:%!?])/g, "$1")
-    .replace(/\s{2,}/g, " ")
-    .trim();
+  const lines = String(text || "")
+    .replace(/\r\n?/g, "\n")
+    .replace(/\t/g, "    ")
+    .split("\n")
+    .map((line) => line.replace(/[\t ]+$/g, ""));
+
+  while (lines.length && !lines[0].trim()) lines.shift();
+  while (lines.length && !lines.at(-1).trim()) lines.pop();
+  return lines.join("\n");
 }
 
 function normalizeKind(kind) {
-  const cleaned = cleanParagraph(kind || "");
+  const cleaned = cleanParagraph(kind || "").trim();
   if (!cleaned) return "Choose 1 answer";
 
   const numberWords = {
